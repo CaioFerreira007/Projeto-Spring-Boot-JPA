@@ -12,11 +12,17 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository repository;
+
     public List<User> findAll() {
         return repository.findAll();
     }
+
     public User findById(Long id) {
         Optional<User> user = repository.findById(id);
         return user.get();
+    }
+
+    public User insert(User user) {
+        return repository.save(user);
     }
 }
