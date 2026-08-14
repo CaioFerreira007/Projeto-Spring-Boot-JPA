@@ -2,8 +2,10 @@ package com.workshop.course.services;
 
 import com.workshop.course.entities.User;
 import com.workshop.course.repositories.UserRepository;
+import com.workshop.course.services.middlewares.DataBaseException;
 import com.workshop.course.services.middlewares.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,9 +29,13 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User delete(Long id) {
-        Optional<User> user = repository.findById(id);
-        return user.get();
+    public void delete(Long id) {
+        try {
+            User user = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+            repository.delete(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataBaseException(e.getMessage());
+        }
     }
 
     public User update(Long id, User user) {
